@@ -1,14 +1,3 @@
-/* 
-  Check the new incoming messages, and print via serialin 115200 baud rate.
-  
-  by Aaron.Lee from HelTec AutoMation, ChengDu, China
-  成都惠利特自动化科技有限公司
-  www.heltec.cn
-  
-  this project also realess in GitHub:
-  https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series
-*/
-
 #include "heltec.h"
 #include "protocol.h"
 
@@ -49,8 +38,6 @@ boolean onReceive(int packetSize)
   while (LoRa.available()) {
     char p = (char)LoRa.read();
     incoming += p;
-
-    // Serial.printf("%02x", p);
   }
 
 
@@ -76,6 +63,9 @@ boolean onReceive(int packetSize)
 
     Heltec.display->drawString(1, 30, " < DATA");
     Heltec.display->drawString(1, 40, " < " + String(msg.latitude,8) + "/" + String(msg.longitude));
+    msg = { MessageType::ACK, 0, 0, 0, 0};
+    sendPacket(msg);
+
   } else if (incoming[0] == (uint8_t)MessageType::ACK){
     Heltec.display->drawString(1, 30, " < ACK");
     Serial.println("ACK received");
