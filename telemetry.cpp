@@ -15,6 +15,9 @@ Lap::Lap(int lapnumber, QString laptime)
 Telemetry::Telemetry(QObject *parent)
     : QObject(parent){
     m_serialport = new QSerialPort(this);
+    m_water_temp = 0;
+    m_fuel_level = 0;
+
     openSerialPort();
     qDebug() << "Telemetry::Telemetry()";
 }
