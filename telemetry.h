@@ -32,6 +32,8 @@ class Telemetry : public QObject
     Q_PROPERTY(int snr READ snr NOTIFY snrChanged);
     Q_PROPERTY(float latitude READ latitude NOTIFY latitudeChanged);
     Q_PROPERTY(float longitude READ longitude NOTIFY longitudeChanged);
+    Q_PROPERTY(float water_temp READ water_temp NOTIFY waterTempChanged);
+    Q_PROPERTY(float fuel_level READ fuel_level NOTIFY fuelLevelChanged);
 
     Q_PROPERTY(QList<QObject*> laps READ getLaps NOTIFY lapsChanged)
 
@@ -42,6 +44,9 @@ public:
     int snr() const;
     float latitude();
     float longitude();
+    float water_temp() { return m_water_temp; }
+    float fuel_level() { return m_fuel_level; }
+
 //     QQmlListProperty<Lap> laps();
     QList<QObject*> getLaps () const { 
         qDebug() << "getLaps has " << m_laps.count() << " laps";
@@ -70,6 +75,8 @@ private:
     int m_snr = 0;
     float m_latitude;
     float m_longitude;
+    float m_water_temp;
+    float m_fuel_level;
 
     QString m_gpx_file_name = "";
     QList<QObject*> m_laps;
@@ -80,7 +87,9 @@ signals:
     void snrChanged();
     void latitudeChanged();
     void longitudeChanged();
-    void lapsChanged ();
+    void lapsChanged();
+    void waterTempChanged();
+    void fuelLevelChanged();
 
 };
 

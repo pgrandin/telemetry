@@ -142,6 +142,21 @@ void Telemetry::readyToRead()
             // log_as_gpx(msg);
         }
 
+        if (message.startsWith("WATERTEMP")) {
+            QStringList parts = message.split(',');
+            m_water_temp = parts[1].toFloat();
+            emit waterTempChanged();
+            sendString("ACK\n");
+        }
+
+        if (message.startsWith("FUELLEVEL")) {
+            QStringList parts = message.split(',');
+            m_fuel_level = parts[1].toFloat();
+            emit fuelLevelChanged();
+            sendString("ACK\n");
+        }
+
+
         if (message.startsWith("LAP")) {
             QStringList parts = message.split(',');
             int lap = parts[1].toInt();
@@ -159,6 +174,8 @@ void Telemetry::readyToRead()
 
             sendString("ACK," + message);
         }
+
+
     }         
 
 }

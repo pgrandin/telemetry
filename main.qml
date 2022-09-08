@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 // import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -16,8 +16,9 @@ import QtPositioning 5.9
 
 Window {
     id: mainWindow
-    width: 800  
-    height: 600
+    // visibility: "FullScreen"
+    width: 1200
+    height: 800
     visible: true
     title: qsTr("Base Station")
     
@@ -116,6 +117,8 @@ Window {
 
     Rectangle{
         id :laptimes
+        x: 0
+        y: 0
 
         anchors.top: grid1.bottom
         anchors.topMargin: 5
@@ -123,8 +126,8 @@ Window {
         anchors.leftMargin: 5
         anchors.bottom : buttongrid.top
         anchors.bottomMargin: 5
-        width: 400
-        height: 200
+        width: 347
+        height: 489
         color: "grey"
         ListModel {
             id: laptimeModel
@@ -176,15 +179,13 @@ Window {
 
     Rectangle {
         id: radio_info
-        x: 400
+        x: 717
         width: 400
         height: 123
-        color: "#ffffff"
+        color: "#a9a1a1"
         anchors.top: parent.top
-        anchors.topMargin: 56
+        anchors.topMargin: 13
         
-
-
         Gauge {
             id: snr_gauge
             x: 0
@@ -263,10 +264,84 @@ Window {
 
     }
 
-    StatusIndicator {
-        id: statusIndicator
-        x: 184
-        y: 210
+    Rectangle {
+        id: fuel_area
+        x: 717
+        y: 156
+        width: 464
+        height: 109
+        color: "#ffffff"
+
+        Text {
+            id: fuel
+            x: 71
+            y: 27
+            text: qsTr("Fuel")
+            font.pixelSize: 24
+            minimumPixelSize: 24
+        }
+
+        Gauge {
+            id: fuel_gauge
+            x: 142
+            y: -6
+            width: 300
+            height: 40
+            anchors.top: fuel_area.top
+            value: telemetry.fuel_level
+            tickmarkStepSize: 10
+            maximumValue: 100
+            orientation: Qt.Horizontal
+            anchors.topMargin: 10
+        }
+
+        Text {
+            id: text1
+            x: 61
+            y: 61
+            text: qsTr("Estimated gas remaining :")
+            font.pixelSize: 24
+        }
+
+        Text {
+            id: text2
+            x: 349
+            y: 61
+            text: ( telemetry.fuel_level / 100 * 17.2) + " gal"
+            font.pixelSize: 24
+        }
+    }
+
+    Rectangle {
+        id: watertemp_area
+        x: 717
+        y: 271
+        width: 464
+        height: 49
+        color: "#ffffff"
+        Text {
+            id: fuel1
+            x: 0
+            y: 22
+            text: qsTr("Water Temp")
+            font.pixelSize: 24
+            minimumPixelSize: 24
+        }
+
+        Gauge {
+            id: watertemp_gauge
+            x: 140
+            y: 1
+            width: 300
+            height: 40
+            anchors.top: watertemp_area.top
+            minimumValue: 50
+            value: telemetry.water_temp
+            tickmarkStepSize: 10
+            maximumValue: 150
+            orientation: Qt.Horizontal
+            anchors.topMargin: 10
+        }
     }
     
 }
