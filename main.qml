@@ -16,8 +16,8 @@ import QtPositioning 5.9
 
 Window {
     id: mainWindow
-    // visibility: "FullScreen"
-    width: 1200
+     visibility: "FullScreen"
+    width: 1280
     height: 800
     visible: true
     title: qsTr("Base Station")
@@ -300,7 +300,7 @@ Window {
             x: 61
             y: 61
             text: qsTr("Estimated gas remaining :")
-            font.pixelSize: 24
+            font.pixelSize: 18
         }
 
         Text {
