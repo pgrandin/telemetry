@@ -1,8 +1,8 @@
 import QtQuick 2.0
-import QtPositioning 5.15
-import QtLocation 5.15
+import QtPositioning 5.12
+import QtLocation 5.12
 
-import io.qt.examples.telemetry 1.0
+// import io.qt.examples.telemetry 1.0
 
 Item {
 
@@ -11,16 +11,6 @@ Item {
         onLatitudeChanged: {
             gpsColorAnimation.restart()
         }
-    }
-
-    Plugin {
-        id: osm
-        name: "osm" // "mapboxgl", "esri", ...
-        // specify plugin parameters if necessary
-        // PluginParameter {
-        //     name:
-        //     value:
-        // }
     }
 
     Plugin {
