@@ -6,6 +6,12 @@
 #include <QDir>
 #include <QDateTime>
 
+Lap::Lap(int lapnumber, QString laptime)
+    : m_lapnumber(lapnumber)
+    , m_laptime(laptime)
+{
+}
+
 Telemetry::Telemetry(QObject *parent)
     : QObject(parent){
     m_serialport = new QSerialPort(this);
@@ -48,6 +54,21 @@ float Telemetry::longitude()
     return m_longitude;
 }
 
+/*
+QQmlListProperty<Lap> Telemetry::messages()
+{
+    return QQmlListProperty<Lap>(this, 0, &Telemetry::append_message);
+}
+
+void Telemetry::append_message(QQmlListProperty<Lap> *list, Lap *msg)
+{
+    Telemetry *msgBoard = qobject_cast<Telemetry *>(list->object);
+    if (msg)
+        msgBoard->m_messages.append(msg);
+}
+
+*/
+
 void Telemetry::openSerialPort()
 {
     m_serialport->setPortName("ttyUSB0");
@@ -65,8 +86,14 @@ void Telemetry::openSerialPort()
     else
     {     
         qDebug() << "Serial port failed to open";
-    }
+    }  
 }     
+
+void Telemetry::sendString(const QString &str)
+{
+    QByteArray data = str.toUtf8();
+    writeData(data);
+}
 
 void Telemetry::writeData(const QByteArray &data)
 {
@@ -80,68 +107,60 @@ void Telemetry::readyToRead()
     QByteArray rawData = m_serialport->readAll();          // read data from serial port
     // qDebug()<< "chunk " << rawData;
     m_serial_incoming.append(rawData);
-
-    qDebug() << "Telemetry::readyToRead()" << m_serial_incoming;
-
-    // fixme : this causes issues when there is no gps fix
-    while (m_serial_incoming.contains('\0'))
+    while (m_serial_incoming.contains('\n'))
     {
-        int end = m_serial_incoming.indexOf('\0') + 1;
-        QByteArray message = m_serial_incoming;
+        int end = m_serial_incoming.indexOf('\n') + 1;
+        QString message = m_serial_incoming;
         qDebug()<< "telemetry response: " << m_serial_incoming;
         message.remove(end, m_serial_incoming.length());
-        // qDebug()<< "Processed Message" << message;
+
         m_serial_incoming.remove(0, end);
-        // qDebug()<< "line new" << line;
-        // ProcessMessage(message);
+        qDebug()<< "Processed Message" << message;
 
-        if (message.startsWith("Message: ACK,")){
+        if (message == "ACK\n") {
             m_isReady = true;
-        } else {
+            // pushFromQueue();
+        }
 
-            // "Received packet '00ff99721e42de71d1c2'\r\n421"
-            // extract the packet between "'" from the message
-            QByteArray packet = message.mid(message.indexOf("'") + 1, message.lastIndexOf("'") - message.indexOf("'") - 1);
-
-            qDebug() << "packet: " << packet;
-            message_t msg;
-
-            // copy the packet to the message struct
-            memcpy(&msg, packet.data(), sizeof(msg));
-            qDebug() << "msg.rssi: " << msg.rssi;
-            qDebug() << "msg.snr: " << msg.snr;
-            qDebug("msg.lat %.6f", msg.latitude);
-            qDebug("msg.lon %.6f", msg.longitude);
-
-            qDebug() << "rssi from raw data" << packet.mid(0, 1);
-            qDebug() << "snr from raw data" << packet.mid(1, 1);
-
-            m_rssi = msg.rssi;
+        if (message.startsWith("RADIO")) {
+            QStringList parts = message.split(',');
+            m_rssi = parts[1].toFloat();
+            m_snr = parts[2].toFloat();
             emit rssiChanged();
-
-            m_snr = msg.snr;
             emit snrChanged();
+        }
 
-            if (msg.latitude < -90 || msg.latitude > 90){
-                qDebug() << "Invalid latitude";
-                return;
-            }
-
-            if (msg.longitude < -180 || msg.longitude > 180){
-                qDebug() << "Invalid longitude";
-                return;
-            }
-
-            m_latitude = msg.latitude;
+        if (message.startsWith("GPS")) {
+            QStringList parts = message.split(',');
+            m_latitude = parts[1].toFloat();
+            m_longitude = parts[2].toFloat();
             emit latitudeChanged();
-            m_longitude = msg.longitude;
             emit longitudeChanged();
 
-            qDebug() << "Telemetry::readyToRead() coords" << m_latitude << m_longitude;            
+            sendString("ACK\n");
 
-            log_as_gpx(msg);
+            // log_as_gpx(msg);
         }
-    }
+
+        if (message.startsWith("LAP")) {
+            QStringList parts = message.split(',');
+            int lap = parts[1].toInt();
+            int64_t time = parts[2].toInt();
+
+            // convert the time into a mm:ss:ms format
+            int64_t ms = time % 1000;
+            int64_t s = (time / 1000) % 60;
+            int64_t m = (time / 1000) / 60;
+            QString laptime = QString("%1:%2.%3").arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0')).arg(ms, 3, 10, QChar('0'));
+
+            m_laps.append(new Lap(lap, laptime));
+            emit lapsChanged();
+
+
+            sendString("ACK," + message);
+        }
+    }         
+
 }
 
 void Telemetry::log_as_gpx(message_t msg){

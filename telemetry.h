@@ -1,10 +1,29 @@
+#include <QDebug>
+
 #include <QObject>
 #include <QSerialPort>
-
+#include <QQmlListProperty>
 
 #include "protocol.h"
 // #include <qqml.h>
 
+class Lap: public QObject
+{
+    Q_OBJECT;
+    Q_PROPERTY(int lapnumber READ lapnumber)
+    Q_PROPERTY(QString laptime READ laptime)
+
+public:
+
+    Lap(int lapnumber, QString laptime);
+    int lapnumber() const { return m_lapnumber; }
+    QString laptime() const { return m_laptime; }
+
+private:
+    int m_lapnumber;
+    QString m_laptime;
+
+};
 
 class Telemetry : public QObject
 {
@@ -14,7 +33,7 @@ class Telemetry : public QObject
     Q_PROPERTY(float latitude READ latitude NOTIFY latitudeChanged);
     Q_PROPERTY(float longitude READ longitude NOTIFY longitudeChanged);
 
-   // QML_ELEMENT
+    Q_PROPERTY(QList<QObject*> laps READ getLaps NOTIFY lapsChanged)
 
 public:
     explicit Telemetry(QObject *parent = 0);
@@ -23,6 +42,12 @@ public:
     int snr() const;
     float latitude();
     float longitude();
+//     QQmlListProperty<Lap> laps();
+    QList<QObject*> getLaps () const { 
+        qDebug() << "getLaps has " << m_laps.count() << " laps";
+        return m_laps; 
+    }
+
 
 
 public slots:
@@ -35,6 +60,7 @@ private:
     QSerialPort *m_serialport;
     void openSerialPort();
     void writeData(const QByteArray &data);
+    void sendString(const QString &str);
     void log_as_gpx(message_t msg);
 
     bool m_isReady = false;
@@ -46,11 +72,15 @@ private:
     float m_longitude;
 
     QString m_gpx_file_name = "";
+    QList<QObject*> m_laps;
+
 
 signals:
     void rssiChanged();
     void snrChanged();
     void latitudeChanged();
     void longitudeChanged();
+    void lapsChanged ();
+
 };
 

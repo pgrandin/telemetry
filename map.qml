@@ -9,7 +9,7 @@ Item {
     Connections {
         target: telemetry
         onLatitudeChanged: {
-            // console.log("latitude: " + latitude)
+            gpsColorAnimation.restart()
         }
     }
 
@@ -45,7 +45,7 @@ Item {
             coordinate: QtPositioning.coordinate(telemetry.latitude,
                                                     telemetry.longitude)
             sourceItem: Rectangle {
-                id: image
+                id: gps_position
                 width: 20
                 height: width
                 radius: width * 0.5
@@ -53,5 +53,14 @@ Item {
             }
         }        
     }
+
+    ColorAnimation {
+        id: gpsColorAnimation
+        target: gps_position
+        property: "color"
+        duration: 5000
+        to: "#ed0e0e"
+        from: "#1e09da"
+    }    
 
 }
