@@ -307,7 +307,7 @@ Window {
             id: text2
             x: 349
             y: 61
-            text: ( telemetry.fuel_level / 100 * 17.2) + " gal"
+            text: ( telemetry.fuel_level / 100 * 17.2).toFixed(1) + " gal"
             font.pixelSize: 24
         }
     }
