@@ -305,7 +305,7 @@ Window {
 
         Text {
             id: text2
-            x: 250
+            x: 270
             y: 61
             text: ( telemetry.fuel_level / 100 * 17.2).toFixed(1) + " gal"
             font.pixelSize: 18
@@ -321,7 +321,7 @@ Window {
 
         Text {
             id: text4
-            x: 250
+            x: 270
             y: 82
             text: ( 17.2 - ( telemetry.fuel_level / 100 * 17.2)).toFixed(1) + " gal"
             font.pixelSize: 18
@@ -347,7 +347,7 @@ Window {
 
         Gauge {
             id: watertemp_gauge_C
-            x: 180
+            x: 200
             y: 1
             width: 250
             height: 40
@@ -371,7 +371,7 @@ Window {
 
         Gauge {
             id: watertemp_gauge_F
-            x: 180
+            x: 200
             y: 60
             width: 250
             height: 40
