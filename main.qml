@@ -179,10 +179,10 @@ Window {
 
     Rectangle {
         id: radio_info
-        x: 717
         width: 400
-        height: 123
+        height: 100
         color: "#a9a1a1"
+        anchors.right: parent.right
         anchors.top: parent.top
         anchors.topMargin: 13
         
@@ -229,7 +229,7 @@ Window {
         
         Text {
             id: rssi_value
-            x: rssi_gauge.width + 5
+            x: rssi_gauge.width + 8
             anchors.top: rssi_gauge.top
             text: telemetry.rssi        
             font.pixelSize: 32
@@ -237,7 +237,7 @@ Window {
         
         Text {
             id: snr_value
-            x: snr_gauge.width + 5
+            x: snr_gauge.width + 8
             anchors.top: snr_gauge.top
             color: "#1c8630"
             text: telemetry.snr
@@ -266,7 +266,7 @@ Window {
 
     Rectangle {
         id: fuel_area
-        x: 717
+        anchors.right: parent.right
         y: 156
         width: 464
         height: 109
@@ -274,7 +274,7 @@ Window {
 
         Text {
             id: fuel
-            x: 71
+            x: 30
             y: 27
             text: qsTr("Fuel")
             font.pixelSize: 24
@@ -297,7 +297,7 @@ Window {
 
         Text {
             id: text1
-            x: 61
+            x: 30
             y: 61
             text: qsTr("Estimated gas remaining :")
             font.pixelSize: 18
@@ -305,42 +305,83 @@ Window {
 
         Text {
             id: text2
-            x: 349
+            x: 250
             y: 61
             text: ( telemetry.fuel_level / 100 * 17.2).toFixed(1) + " gal"
-            font.pixelSize: 24
+            font.pixelSize: 18
         }
+
+        Text {
+            id: text3
+            x: 30
+            y: 82
+            text: qsTr("Estimated gas to fill up :")
+            font.pixelSize: 18
+        }
+
+        Text {
+            id: text4
+            x: 250
+            y: 82
+            text: ( 17.2 - ( telemetry.fuel_level / 100 * 17.2)).toFixed(1) + " gal"
+            font.pixelSize: 18
+        }
+
     }
 
     Rectangle {
         id: watertemp_area
-        x: 717
+        x: 816
+        anchors.right: parent.right
         y: 271
         width: 464
-        height: 49
+        height: 121
         color: "#ffffff"
         Text {
-            id: fuel1
+            id: watertemp_C
             x: 0
             y: 22
-            text: qsTr("Water Temp")
+            text: qsTr("Water Temp (C)")
             font.pixelSize: 24
             minimumPixelSize: 24
         }
 
         Gauge {
-            id: watertemp_gauge
-            x: 140
+            id: watertemp_gauge_C
+            x: 180
             y: 1
-            width: 300
+            width: 250
             height: 40
             anchors.top: watertemp_area.top
-            minimumValue: 50
+            minimumValue: 70
             value: telemetry.water_temp
             tickmarkStepSize: 10
-            maximumValue: 150
+            maximumValue: 120
             orientation: Qt.Horizontal
             anchors.topMargin: 10
+        }
+
+        Text {
+            id: watertemp_F
+            x: 0
+            y: 60
+            text: qsTr("Water Temp (F)")
+            font.pixelSize: 24
+            minimumPixelSize: 24
+        }
+
+        Gauge {
+            id: watertemp_gauge_F
+            x: 180
+            y: 60
+            width: 250
+            height: 40
+            minimumValue: 180
+            value: (telemetry.water_temp * 9/5 + 32)
+            tickmarkStepSize: 10
+            maximumValue: 240
+            orientation: Qt.Horizontal
+            anchors.topMargin: 45
         }
     }
     
