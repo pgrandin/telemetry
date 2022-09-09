@@ -331,10 +331,9 @@ Window {
 
     Rectangle {
         id: watertemp_area
-        x: 816
         anchors.right: parent.right
         y: 271
-        width: 464
+        width: 490
         height: 121
         color: "#ffffff"
         Text {
@@ -376,7 +375,7 @@ Window {
             y: 60
             width: 250
             height: 40
-            minimumValue: 180
+            minimumValue: 160
             value: (telemetry.water_temp * 9/5 + 32)
             tickmarkStepSize: 10
             maximumValue: 240
